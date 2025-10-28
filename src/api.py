@@ -19,7 +19,8 @@ from src.models import (
 )
 from src.vector_store import VectorStore
 from src.rag_pipeline import RAGPipeline
-from src.evaluation import RAGASEvaluator
+# Temporarily disabled due to deployment issues with Rust dependencies
+# from src.evaluation import RAGASEvaluator
 
 # Global variables
 vector_store: Optional[VectorStore] = None
@@ -133,7 +134,8 @@ async def root():
         "endpoints": {
             "health": "/health",
             "query": "/query (POST)",
-            "evaluate": "/evaluate (POST)",
+            "stats": "/stats",
+            # "evaluate": "/evaluate (POST)",  # Temporarily disabled
             "docs": "/docs"
         }
     }
@@ -208,33 +210,35 @@ async def query_endpoint(request: QueryRequest):
         )
 
 
-@app.post("/evaluate", response_model=EvaluationResponse)
-async def evaluate_endpoint(request: EvaluationRequest):
-    """
-    Evaluate the RAG system using RAGAS metrics
-    
-    - **questions**: List of questions to evaluate
-    - **ground_truths**: Optional list of ground truth answers
-    """
-    if not rag_pipeline:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="RAG pipeline not initialized."
-        )
-    
-    try:
-        evaluator = RAGASEvaluator(rag_pipeline)
-        results = evaluator.evaluate(
-            questions=request.questions,
-            ground_truths=request.ground_truths
-        )
-        return results
-    
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error during evaluation: {str(e)}"
-        )
+# TEMPORARILY DISABLED: Evaluation endpoint requires 'ragas' package which has Rust compilation issues
+# Will be re-enabled once deployment issues are resolved
+# @app.post("/evaluate", response_model=EvaluationResponse)
+# async def evaluate_endpoint(request: EvaluationRequest):
+#     """
+#     Evaluate the RAG system using RAGAS metrics
+#     
+#     - **questions**: List of questions to evaluate
+#     - **ground_truths**: Optional list of ground truth answers
+#     """
+#     if not rag_pipeline:
+#         raise HTTPException(
+#             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+#             detail="RAG pipeline not initialized."
+#         )
+#     
+#     try:
+#         evaluator = RAGASEvaluator(rag_pipeline)
+#         results = evaluator.evaluate(
+#             questions=request.questions,
+#             ground_truths=request.ground_truths
+#         )
+#         return results
+#     
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Error during evaluation: {str(e)}"
+#         )
 
 
 @app.get("/stats", response_model=dict)
