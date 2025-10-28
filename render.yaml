@@ -11,6 +11,8 @@ services:
     startCommand: uvicorn src.api:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
       - key: VECTOR_STORE_URL
         sync: false  # Add this manually in Render dashboard
       - key: GEMINI_API_KEY
