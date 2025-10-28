@@ -14,8 +14,8 @@ __pycache__/
 .Python
 
 # Data & Models
-data/vector_store/*  # All vector store files (551MB total)
-data/raw_documents/*
+data/vector_store/*  # Will be generated on Render during deployment
+# data/raw_documents/*  # KEEP PDFs for Render ingestion
 data/processed/*
 *.pkl
 *.bin
